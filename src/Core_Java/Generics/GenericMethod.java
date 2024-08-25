@@ -2,7 +2,7 @@ package Core_Java.Generics;
 
 public class GenericMethod {
     public static void main(String[] args) {
-        // Calling the generic method 'show' with a String argument.
+        // Calling the generic method 'show' with a String argument
         show("Hello");
 
         // Calling the generic method 'show' with an Integer argument.
