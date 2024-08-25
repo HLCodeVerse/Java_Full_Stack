@@ -6,6 +6,8 @@ public class Wrap1 {
         // This method returns an Integer object representing the specified integer value
         //autoBoxing
         Integer i = Integer.valueOf(5);
+        //converting String to Integer
+        Integer i2=Integer.valueOf("123");
 
         // Create another Integer object j directly by assigning the integer value 54 to it
         Integer j = 54;
