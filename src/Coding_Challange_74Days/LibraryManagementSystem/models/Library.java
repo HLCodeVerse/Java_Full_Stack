@@ -3,12 +3,16 @@ package Coding_Challange_74Days.LibraryManagementSystem.models;
 import Coding_Challange_74Days.LibraryManagementSystem.exceptions.BookNotFoundException;
 import Coding_Challange_74Days.LibraryManagementSystem.exceptions.MemberNotFoundException;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 public class Library {
     private ArrayList<Book> books = new ArrayList<>();
     private ArrayList<Member> members = new ArrayList<>();
+    private Map<String, Integer> overDue = new HashMap<>();
 
     public void addBook(Book book) {
         if (!books.contains(book)) {
@@ -116,11 +120,13 @@ public class Library {
         if (book.isAvailable()) {
             book.setAvailable(false);
             member.addBorrowedBook(bookId);
+            book.setBorrowDate(LocalDate.now()); // Set the borrow date to today
             System.out.println("Book issued successfully");
         } else {
             System.out.println("Book is currently not available");
         }
     }
+
     // Day 9 - Return Book Method
     public void returnBook(String bookId, String memberId) throws BookNotFoundException, MemberNotFoundException {
         Book book = null;
@@ -152,4 +158,65 @@ public class Library {
         }
     }
 
+    // Day 10 - Reserve Book Method
+    public void reserveBook(String bookId, String memberId) throws BookNotFoundException, MemberNotFoundException {
+        Book book = null;
+        Member member = null;
+        for (Book b : books) {
+            if (b.getId().equalsIgnoreCase(bookId)) {
+                book = b;
+                break;
+            }
+        }
+        if (book == null) {
+            throw new BookNotFoundException("Book with ID " + bookId + " not found");
+        }
+        for (Member m : members) {
+            if (m.getId().equalsIgnoreCase(memberId)) {
+                member = m;
+                break;
+            }
+        }
+        if (member == null) {
+            throw new MemberNotFoundException("Member with ID " + memberId + " not found");
+        }
+        if (!book.isAvailable()) {
+            if (!book.getReservationList().contains(memberId)) {
+                book.getReservationList().add(memberId);
+                System.out.println("Book reserved successfully");
+            } else {
+                System.out.println("Member has already reserved this book");
+            }
+        } else {
+            System.out.println("Book is already available");
+        }
+    }
+
+    // Day 11 - Overdue Book Management
+    public void manageOverdueBooks() {
+        LocalDate today = LocalDate.now();
+        for (Member member : members) {
+            for (String bookId : member.getBorrowedBooks()) {
+                Book book = getBookById(bookId);
+                if (book != null && !book.isAvailable()) {
+                    LocalDate borrowDate = book.getBorrowDate();
+                    long daysBorrowed = java.time.temporal.ChronoUnit.DAYS.between(borrowDate, today);
+                    int overdueDays = (int) (daysBorrowed - book.getBorrowingPeriod());
+                    if (daysBorrowed > book.getBorrowingPeriod ()) {
+                        System.out.println("Member " + member.getName() + " has overdue book " + book.getTitle() + " for " + overdueDays + " days");
+                        overDue.put(bookId, overdueDays);
+                    }
+                }
+            }
+        }
+    }
+
+    public Book getBookById(String bookId) {
+        for (Book book : books) {
+            if (book.getId().equalsIgnoreCase(bookId)) {
+                return book;
+            }
+        }
+        return null;
+    }
 }
