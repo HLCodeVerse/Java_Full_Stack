@@ -1,3 +1,4 @@
+//Day 3
 package Coding_Challange_74Days.LibraryManagementSystem.models;
 
 import Coding_Challange_74Days.LibraryManagementSystem.exceptions.BookNotFoundException;
@@ -48,5 +49,25 @@ public class Library {
             }
         }
         throw new MemberNotFoundException("Member with ID " + memberId + " not found");
+    }
+    //Day 4
+    public String searchBookByTitle(String title) throws BookNotFoundException {
+        Iterator<Book> iterator =  books.iterator();
+        while (iterator.hasNext()) {
+            Book book = iterator.next();
+            if (book.getTitle().equalsIgnoreCase(title)) {
+                return book.toString();
+            }
+        }throw new BookNotFoundException ( title+" Currently not available in Library" );
+    }
+    public String searchMemberByName(String name) throws MemberNotFoundException {
+        Iterator<Member> iterator = members.iterator();
+        while (iterator.hasNext()) {
+            Member member = iterator.next();
+            if (member.getName().equalsIgnoreCase(name)) {
+                return member.toString();
+            }
+        }
+        throw new MemberNotFoundException (name+" not found" );
     }
 }
