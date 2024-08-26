@@ -219,4 +219,34 @@ public class Library {
         }
         return null;
     }
+    // Day 12 - Develop Notification System
+    public void notifyMembers() {
+        for (Member member : members) {
+            System.out.println("Notifications for member " + member.getName() + ":");
+
+            // Check for reserved books
+            for (Book book : books) {
+                // Notification for reservations
+                if (book.getReservationList().contains(member.getId())) {
+                    if (!book.isAvailable()) {
+                        System.out.println("  - Book reserved: " + book.getTitle());
+                    }
+                }
+
+                // Notification for reserved books becoming available
+                if (book.getReservationList().contains(member.getId()) && book.isAvailable()) {
+                    System.out.println("  - Reserved book is now available: " + book.getTitle());
+                }
+
+                // Notification for overdue books
+                // Notification for overdue books
+                if (member.getBorrowedBooks().contains(book.getId())) {
+                    Integer overdueDays = overDue.get(book.getId());
+                    if (overdueDays != null) {
+                        System.out.println("  - Book overdue: " + book.getTitle() + " for " + overdueDays + " days");
+                    }
+                }
+            }
+                }
+            }
 }
