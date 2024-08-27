@@ -1,20 +1,22 @@
 package Coding_Challange_74Days.LibraryManagementSystem.models;
-
+//DAY 1
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Book {
+    // Fields
     private String id;
     private String title;
     private String author;
     private String genre;
     private boolean isAvailable;
     private List<String> reservationList;
-    private LocalDate borrowDate; // day 11
-    private final int borrowingPeriod = 15; // days 11
+    private LocalDate borrowDate; // Day 11
+    private final int borrowingPeriod = 15; // Day 11
 
-    public Book(String id, String title, String author, String genre, boolean isAvailable, List<String> reservationList) {
+    // Constructor
+    public Book(String id, String title, String author, String genre, boolean isAvailable) {
         this.id = id;
         this.title = title;
         this.author = author;
@@ -90,16 +92,14 @@ public class Book {
         return LocalDate.now();
     }
 
+    // ToString Method
     @Override
     public String toString() {
-        return "Book{" +
-                "id='" + id + '\'' +
-                ", title='" + title + '\'' +
-                ", author='" + author + '\'' +
-                ", genre='" + genre + '\'' +
-                ", isAvailable=" + isAvailable +
-                ", reservationList=" + reservationList +
-                ", borrowDate=" + borrowDate +
-                '}';
+        return "ID: " + id + "\n" +
+                "Title: " + title + "\n" +
+                "Author: " + author + "\n" +
+                "Genre: " + genre + "\n" +
+                "Available: " + (isAvailable ? "Yes" : "No") + "\n" +
+                "Reservation List: " + reservationList;
     }
 }
