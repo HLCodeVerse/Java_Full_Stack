@@ -14,6 +14,34 @@ public class Library {
     private ArrayList<Member> members = new ArrayList<>();
     private Map<String, Integer> overDue = new HashMap<>();
 
+    // Getters and Setters
+    public ArrayList<Book> getBooks() {
+        return books;
+    }
+
+    public void setBooks(ArrayList<Book> books) {
+        this.books = books;
+    }
+
+    public ArrayList<Member> getMembers() {
+        return members;
+    }
+
+    public void setMembers(ArrayList<Member> members) {
+        this.members = members;
+    }
+
+    public Map<String, Integer> getOverDue() {
+        return overDue;
+    }
+
+    public void setOverDue(Map<String, Integer> overDue) {
+        this.overDue = overDue;
+    }
+
+    // Day 1: Add and Remove Books
+    // ------------------------------------
+    // Add a new book to the library
     public void addBook(Book book) {
         if (!books.contains(book)) {
             books.add(book);
@@ -22,6 +50,7 @@ public class Library {
         }
     }
 
+    // Remove an existing book by ID
     public void removeBook(String bookId) throws BookNotFoundException {
         Iterator<Book> iterator = books.iterator();
         while (iterator.hasNext()) {
@@ -34,6 +63,9 @@ public class Library {
         throw new BookNotFoundException("Book with ID " + bookId + " not found");
     }
 
+    // Day 2: Register and Remove Members
+    // ------------------------------------
+    // Register a new member to the library
     public void registerMember(Member member) throws MemberNotFoundException {
         if (!members.contains(member)) {
             members.add(member);
@@ -42,6 +74,7 @@ public class Library {
         }
     }
 
+    // Remove an existing member by ID
     public void removeMember(String memberId) throws MemberNotFoundException {
         Iterator<Member> iterator = members.iterator();
         while (iterator.hasNext()) {
@@ -54,10 +87,11 @@ public class Library {
         throw new MemberNotFoundException("Member with ID " + memberId + " not found");
     }
 
+    // Day 3: Search Books and Members
+    // ------------------------------------
+    // Search for a book by title
     public String searchBookByTitle(String title) throws BookNotFoundException {
-        Iterator<Book> iterator = books.iterator();
-        while (iterator.hasNext()) {
-            Book book = iterator.next();
+        for (Book book : books) {
             if (book.getTitle().equalsIgnoreCase(title)) {
                 return book.toString();
             }
@@ -65,10 +99,9 @@ public class Library {
         throw new BookNotFoundException(title + " is currently not available in the library");
     }
 
+    // Search for a member by name
     public String searchMemberByName(String name) throws MemberNotFoundException {
-        Iterator<Member> iterator = members.iterator();
-        while (iterator.hasNext()) {
-            Member member = iterator.next();
+        for (Member member : members) {
             if (member.getName().equalsIgnoreCase(name)) {
                 return member.toString();
             }
@@ -76,114 +109,73 @@ public class Library {
         throw new MemberNotFoundException(name + " not found");
     }
 
-    // Day 5 - Display Methods
+    // Day 4: Display Books and Members
+    // ------------------------------------
+    // Display all existing books in the library
     public void displayBooks() throws BookNotFoundException {
         if (books.isEmpty()) {
-            throw new BookNotFoundException("There are no books available");
+            throw new BookNotFoundException("Books are not available");
         }
         for (Book book : books) {
-            System.out.println(book);
+            System.out.println(book.toString());
         }
     }
 
+    // Display all existing members in the library
     public void displayMembers() throws MemberNotFoundException {
         if (members.isEmpty()) {
             throw new MemberNotFoundException("There are no members available");
         }
         for (Member member : members) {
-            System.out.println(member);
+            System.out.println(member.toString());
         }
     }
 
-    // Day 8 - Issue Book Method
+    // Day 5: Issue and Return Books
+    // ------------------------------------
+    // Issue a book to a member
     public void issueBook(String bookId, String memberId) throws BookNotFoundException, MemberNotFoundException {
-        Book book = null;
-        Member member = null;
-        for (Book b : books) {
-            if (b.getId().equalsIgnoreCase(bookId)) {
-                book = b;
-                break;
-            }
-        }
-        if (book == null) {
-            throw new BookNotFoundException("Book with ID " + bookId + " not found");
-        }
-        for (Member m : members) {
-            if (m.getId().equalsIgnoreCase(memberId)) {
-                member = m;
-                break;
-            }
-        }
-        if (member == null) {
-            throw new MemberNotFoundException("Member with ID " + memberId + " not found");
-        }
+        Book book = getBookById(bookId);
+        Member member = getMemberById(memberId);
+
         if (book.isAvailable()) {
             book.setAvailable(false);
             member.addBorrowedBook(bookId);
+            member.addNotification("Book " + book.getTitle() + " borrowed successfully");
             book.setBorrowDate(LocalDate.now()); // Set the borrow date to today
-            System.out.println("Book issued successfully");
+            System.out.println("Book " + book.getTitle() + " issued successfully");
         } else {
             System.out.println("Book is currently not available");
         }
     }
 
-    // Day 9 - Return Book Method
+    // Return a borrowed book
     public void returnBook(String bookId, String memberId) throws BookNotFoundException, MemberNotFoundException {
-        Book book = null;
-        Member member = null;
-        for (Book b : books) {
-            if (b.getId().equalsIgnoreCase(bookId)) {
-                book = b;
-                break;
-            }
-        }
-        if (book == null) {
-            throw new BookNotFoundException("Book with ID " + bookId + " not found");
-        }
-        for (Member m : members) {
-            if (m.getId().equalsIgnoreCase(memberId)) {
-                member = m;
-                break;
-            }
-        }
-        if (member == null) {
-            throw new MemberNotFoundException("Member with ID " + memberId + " not found");
-        }
+        Book book = getBookById(bookId);
+        Member member = getMemberById(memberId);
+
         if (!book.isAvailable()) {
             book.setAvailable(true);
             member.removeBorrowedBook(bookId);
-            System.out.println("Book returned successfully");
+            member.clearNotifications();
+            System.out.println("Book " + book.getTitle() + " returned successfully");
         } else {
             System.out.println("Book is already available");
         }
     }
 
-    // Day 10 - Reserve Book Method
+    // Day 6: Reserve Books
+    // ------------------------------------
+    // Reserve a book for a member
     public void reserveBook(String bookId, String memberId) throws BookNotFoundException, MemberNotFoundException {
-        Book book = null;
-        Member member = null;
-        for (Book b : books) {
-            if (b.getId().equalsIgnoreCase(bookId)) {
-                book = b;
-                break;
-            }
-        }
-        if (book == null) {
-            throw new BookNotFoundException("Book with ID " + bookId + " not found");
-        }
-        for (Member m : members) {
-            if (m.getId().equalsIgnoreCase(memberId)) {
-                member = m;
-                break;
-            }
-        }
-        if (member == null) {
-            throw new MemberNotFoundException("Member with ID " + memberId + " not found");
-        }
+        Book book = getBookById(bookId);
+        Member member = getMemberById(memberId);
+
         if (!book.isAvailable()) {
             if (!book.getReservationList().contains(memberId)) {
                 book.getReservationList().add(memberId);
-                System.out.println("Book reserved successfully");
+                member.addNotification("Book " + book.getTitle() + " reserved successfully");
+                System.out.println("Book " + book.getTitle() + " reserved successfully");
             } else {
                 System.out.println("Member has already reserved this book");
             }
@@ -192,8 +184,10 @@ public class Library {
         }
     }
 
-    // Day 11 - Overdue Book Management
-    public void manageOverdueBooks() {
+    // Day 7: Overdue Book Management
+    // ------------------------------------
+    // Manage overdue books
+    public void manageOverdueBooks() throws BookNotFoundException {
         LocalDate today = LocalDate.now();
         for (Member member : members) {
             for (String bookId : member.getBorrowedBooks()) {
@@ -202,7 +196,7 @@ public class Library {
                     LocalDate borrowDate = book.getBorrowDate();
                     long daysBorrowed = java.time.temporal.ChronoUnit.DAYS.between(borrowDate, today);
                     int overdueDays = (int) (daysBorrowed - book.getBorrowingPeriod());
-                    if (daysBorrowed > book.getBorrowingPeriod ()) {
+                    if (overdueDays > 0) {
                         System.out.println("Member " + member.getName() + " has overdue book " + book.getTitle() + " for " + overdueDays + " days");
                         overDue.put(bookId, overdueDays);
                     }
@@ -211,42 +205,49 @@ public class Library {
         }
     }
 
-    public Book getBookById(String bookId) {
+    // Day 8: Notification System
+    // ------------------------------------
+    // Notify members about reserved books becoming available
+    public void notifyMembers() {
+        for (Member member : members) {
+            System.out.println("Notifications for: " + member.getName());
+
+            // Check for reserved books that are now available
+            for (Book book : books) {
+                if (book.getReservationList().contains(member.getId()) && book.isAvailable()) {
+                    String notification = "The book '" + book.getTitle() + "' is now available for you.";
+                    System.out.println(notification); // Display the notification immediately
+                }
+            }
+
+            // Display any existing notifications
+            if (member.getNotifications().isEmpty()) {
+                System.out.println("No notifications.");
+            } else {
+                for (String notification : member.getNotifications()) {
+                    System.out.println(notification);
+                }
+            }
+        }
+    }
+
+    // Helper Methods
+    // ------------------------------------
+    private Book getBookById(String bookId) throws BookNotFoundException {
         for (Book book : books) {
             if (book.getId().equalsIgnoreCase(bookId)) {
                 return book;
             }
         }
-        return null;
+        throw new BookNotFoundException("Book with ID " + bookId + " not found");
     }
-    // Day 12 - Develop Notification System
-    public void notifyMembers() {
+
+    private Member getMemberById(String memberId) throws MemberNotFoundException {
         for (Member member : members) {
-            System.out.println("Notifications for member " + member.getName() + ":");
-
-            // Check for reserved books
-            for (Book book : books) {
-                // Notification for reservations
-                if (book.getReservationList().contains(member.getId())) {
-                    if (!book.isAvailable()) {
-                        System.out.println("  - Book reserved: " + book.getTitle());
-                    }
-                }
-
-                // Notification for reserved books becoming available
-                if (book.getReservationList().contains(member.getId()) && book.isAvailable()) {
-                    System.out.println("  - Reserved book is now available: " + book.getTitle());
-                }
-
-                // Notification for overdue books
-                // Notification for overdue books
-                if (member.getBorrowedBooks().contains(book.getId())) {
-                    Integer overdueDays = overDue.get(book.getId());
-                    if (overdueDays != null) {
-                        System.out.println("  - Book overdue: " + book.getTitle() + " for " + overdueDays + " days");
-                    }
-                }
+            if (member.getId().equalsIgnoreCase(memberId)) {
+                return member;
             }
-                }
-            }
+        }
+        throw new MemberNotFoundException("Member with ID " + memberId + " not found");
+    }
 }
